@@ -13,11 +13,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int winH, winW;
+    int winW = 800, winH = 600;
     SDL_Window *window = SDL_CreateWindow(
         "SOKOBAN - GAME",
-        800,
-        600,
+        winW,
+        winH,
         SDL_WINDOW_RESIZABLE);
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL);
@@ -32,10 +32,20 @@ int main(int argc, char *argv[])
         {
             if (event.type == SDL_EVENT_QUIT)
                 run = false;
+            if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE)
+            {
+                run = false;
+                std::cout << "Sortie par la touche 'ESCAPE'." << std::endl;
+            }
+            if (event.type == SDL_WINDOW_RESIZABLE)
+            {
+                winW = event.window.data1;
+                winH = event.window.data2;
+            }
         }
 
         // Rendu Graphique
-        SDL_SetRenderDrawColor(renderer, 100, 95, 90, 255);
+        SDL_SetRenderDrawColor(renderer, 100, 200, 90, 255);
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
