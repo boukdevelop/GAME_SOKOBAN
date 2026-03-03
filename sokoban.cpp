@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         // Gestion des éléments
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_EVENT_QUIT && event.key.scancode == SDL_SCANCODE_ESCAPE)
+            if (event.type == SDL_EVENT_QUIT)
                 run = false;
         }
 
