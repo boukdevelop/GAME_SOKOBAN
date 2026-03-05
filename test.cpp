@@ -3,6 +3,8 @@
 #include <SDL3/SDL_gamepad.h> // <‑‑ définit SDL_Gamepad
 #include <iostream>
 
+// Test de status
+
 bool PointInRect(int x, int y, SDL_FRect &rect)
 {
     return x >= rect.x &&
