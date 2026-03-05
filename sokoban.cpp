@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
                     play.y = oldY;
                 }
             }
+            //
 
             // COLLISION PERSO -> MUR (On bloque le perso)
             if (SDL_HasRectIntersectionFloat(&play, &wall))
