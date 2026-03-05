@@ -86,8 +86,11 @@ int main(int argc, char *argv[])
             }
 
             // Gestion du rectangle par le motion du curseur (Glisser le rectangle)
+            if (event.type == SDL_EVENT_KEY_DOWN)
+            {
+            }
         }
-
+        
         // Rendu Graphique
         SDL_SetRenderDrawColor(renderer, 100, 200, 90, 255);
         SDL_RenderClear(renderer);
