@@ -30,16 +30,35 @@ int main(int argc, char *argv[])
     // CHargement de la texture
     SDL_Texture *playtexture = IMG_LoadTexture(renderer, "assests/logo.png");
 
+    // Image de fond
+    SDL_Texture *bgtexture = IMG_LoadTexture(renderer, "assests/gazon.jpg");
+
+    // Image du block osbtacle
+    SDL_Texture *boxTexture = IMG_LoadTexture(renderer, "assests/brique.jpg");
+
+    // Si l'image ne charge pas, on affichera quand même un rectangle
     if (!playtexture)
         SDL_Log("Impossible de charger l'image : %s", SDL_GetError());
-    // Si l'image ne charge pas, on affichera quand même un rectangle
+
     SDL_Event event;
     bool run = true;
 
     // Creation du personnage (Rectangle de destination)
     SDL_FRect play{300.0f, 200.0f, 70.0f, 70.0f};
+
+    // Ajout de l'obstacle (Caisse)
+    SDL_FRect box{450.0f, 400.0f, 70.0f, 30.0f};
+
+    // Ajout de l'obstacle (Mur)
+    SDL_FRect wall{600.0f, 200.0f, 50.0f, 400.0f};
+
     float speed = 40.0f;      // Vitesse de deplacement
     bool Isfollowing = false; // Vérifit si le rect suit la souris
+
+    float oldX,
+        oldY,
+        oldBoxX,
+        oldBoxY;
 
     while (run)
     {
@@ -47,9 +66,10 @@ int main(int argc, char *argv[])
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_EVENT_QUIT)
-                run = false;
+                run = false; // Sortie de la fenêtre
             if (event.type == SDL_WINDOW_RESIZABLE)
             {
+                // Ajustement de la taille de l'écran à la fenêtre
                 winW = event.window.data1;
                 winH = event.window.data2;
             }
@@ -57,6 +77,12 @@ int main(int argc, char *argv[])
             // Gestion des mouvements du rectangle
             if (event.type == SDL_EVENT_KEY_DOWN)
             {
+                // On sauvegarde les anciennes positions pour gérer les collisions
+                oldX = play.x,
+                oldY = play.y,
+                oldBoxX = box.x,
+                oldBoxY = box.y;
+
                 switch (event.key.scancode)
                 {
                 case SDL_SCANCODE_W:
@@ -92,6 +118,30 @@ int main(int argc, char *argv[])
                 default:
                     break;
                 }
+            }
+
+            // COLLISION perso -> caisse (Pousser)
+            if (SDL_HasRectIntersectionFloat(&play, &box))
+            {
+                // On deplace la caisse dans la même direction
+                box.x += (play.x - oldX);
+                box.y += (play.y - oldY);
+
+                // COllisin CAISSE -> MUR (On bloque la caisse)
+                if (SDL_HasRectIntersectionFloat(&box, &wall))
+                {
+                    box.x = oldBoxX;
+                    box.y = oldBoxY;
+                    play.x = oldX; // Le person est blloqué car la caisse ne peut pas bouger
+                    play.y = oldY;
+                }
+            }
+
+            // COLLISION PERSO -> MUR (On bloque le perso)
+            if (SDL_HasRectIntersectionFloat(&play, &wall))
+            {
+                play.x = oldX;
+                play.y = oldY;
             }
 
             // Gestion du rectangle par le motion du curseur (Glisser le rectangle)
@@ -134,14 +184,54 @@ int main(int argc, char *argv[])
             SDL_RenderFillRect(renderer, &play);
         }
 
+        // Arrière plan
+        if (bgtexture)
+        {
+            // NULL : En destination de toute la fenêtre
+            SDL_RenderTexture(renderer, bgtexture, NULL, NULL);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 100, 200, 90, 255);
+            SDL_RenderClear(renderer);
+        }
+
+        // Rendu du mur
+        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+        SDL_RenderFillRect(renderer, &wall);
+
+        // Rendu de la caisse
+        if (boxTexture)
+        {
+            SDL_RenderTexture(renderer, boxTexture, NULL, &box);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+            SDL_RenderFillRect(renderer, &box);
+        }
+
         // // Rendu du rectangle
         // SDL_SetRenderDrawColor(renderer, 200, 100, 99, 255);
         // SDL_RenderFillRect(renderer, &play);
+
+        // Rendu du personnage
+        if (playtexture)
+        {
+            SDL_RenderTexture(renderer, playtexture, NULL, &play);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 200, 109, 99, 255);
+            SDL_RenderFillRect(renderer, &play);
+        }
 
         // Présentation du graphique
         SDL_RenderPresent(renderer);
     }
 
+    SDL_DestroyTexture(bgtexture);
+    SDL_DestroyTexture(boxTexture);
     SDL_DestroyTexture(playtexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
