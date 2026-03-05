@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
                 case SDL_SCANCODE_ESCAPE:
                 {
                     run = false;
-                    std::cout << "Sortie par la touche 'ESCAPE'.";
+                    std::cout << "Sortie par la touche 'ESCAPE' du clavier.";
                     break;
                 }
                 default:
@@ -238,3 +238,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+// Pourquoi tu ne voulais pas d'abord entrer, Cuon
