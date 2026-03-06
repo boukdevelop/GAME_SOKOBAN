@@ -238,5 +238,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-// Pourquoi tu ne voulais pas d'abord entrer, Cuon
